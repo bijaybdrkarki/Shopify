@@ -11,27 +11,27 @@ Since this cart should be availble in every page.
         "en": "Sidecart"
         },
         "settings": [
-        {
-            "type": "text",
-            "default": "Sidecart",
-            "id": "sidecart_title_2",
-            "label": "Sidecart Title"
-        },
-        {
-            "type": "product",
-            "id": "sidecart_empty_cart_1",
-            "label": "sidecart Product 1"
-        },
-        {
-            "type": "product",
-            "id": "sidecart_empty_cart_2",
-            "label": "sidecart Product 2"
-        },
-        {
-            "type": "product",
-            "id": "sidecart_empty_cart_3",
-            "label": "sidecart Product 3"
-        }
+            {
+                "type": "text",
+                "default": "Sidecart",
+                "id": "sidecart_title_2",
+                "label": "Sidecart Title"
+            },
+            {
+                "type": "product",
+                "id": "sidecart_empty_cart_1",
+                "label": "sidecart Product 1"
+            },
+            {
+                "type": "product",
+                "id": "sidecart_empty_cart_2",
+                "label": "sidecart Product 2"
+            },
+            {
+                "type": "product",
+                "id": "sidecart_empty_cart_3",
+                "label": "sidecart Product 3"
+            }
         ]
     }
    ``` 
