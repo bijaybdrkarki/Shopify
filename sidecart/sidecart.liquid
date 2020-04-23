@@ -1,0 +1,302 @@
+<style>
+  h1,h4,p{
+  margin-bottom: 0;
+  line-height: 1;
+  }
+  .remove{
+  text-decoration: underline;
+  color: rgb(0,0,150);
+  }
+  #side-cart{
+    box-sizing: border-box;
+  	position: fixed;
+    z-index: 9999; 
+    height: 100vh;
+    background: rgb(113,205,249);
+    background: radial-gradient(circle, rgba(113,205,249,1) 0%, rgba(115,198,205,1) 100%); 
+    overflow-y: auto;
+    width: 400px;
+    right: -400px;
+    transition : right 2s;
+    border: 0.5px solid black;
+    padding: 15px;
+  }
+  #side-cart.open{
+  	right: 0px 
+  }
+  #cart-button{
+   position: fixed;
+    top: 1px;
+    padding: 10px;
+    transition : right 2s;
+    background : black;
+    color: white;
+  }
+  .head{
+   border-bottom: 1px solid black;
+   margin-bottom: 5px;
+  }
+  .item{
+  margin: 5px 140px 5px 0px;
+  display: inline;
+  font-size: 1.5em;
+  font-family: sans-serif;  
+  }
+  .quant{
+  display: inline-block;
+  font-size: 1.5em;
+  font-family: sans-serif;    
+  }
+  .button{
+   background-color: #ddd;
+   border: 2px solid #444;
+   border-radius: 8px;
+   padding: 7px 10px; 
+   margin-bottom: 15px;
+   outline: none 
+  }
+  .button:hover{
+  text-decoration: underline;
+  color: red;  
+  }
+  .button:active{
+  transform: translateY(4px);
+  }
+  
+  .open{
+    right: 400px;
+  }
+  .closed{
+    right : 0px;
+  }
+  .nameQuantity{
+  	display: grid;
+    grid-template-columns: 1fr 0.5fr;
+  }
+  .title{
+  padding: 5px 0px;
+  align-self: center;  
+  }
+  .input{
+  padding: 2.5px 0px;
+  text-align: center;
+  width: 55px;
+  }
+  .size{
+  	color: rgb(150,0,0);
+  }
+  .suggest{
+   box-sizing: border-box;
+   margin-top: 20px; 
+   padding-top: 5px; 
+   font-size: 0.9em; 
+   border-top : 1px solid black; 
+  }
+  .suggest h2{
+  font-family: sans-serif; 
+  }
+  .sugg_title{
+  margin-bottom: 10px;
+  }
+  .price-discount{ 
+  padding-top: 20px;
+  border-top: 1px solid black;  
+  }
+  
+  .price-discount div{
+  margin-right: 10px;  
+  text-align: right;
+  }
+  .tax{
+  text-align: center;
+  color: black;  
+  }
+</style>
+
+
+
+<div id="side-cart" :class="cartOpen ? 'open' : 'closed'">
+  <div class="head"><h1 class="item"> Item(s) </h1> <h1 class="quant">Quantity </h1> </div>
+  {% raw %}
+  <button id="cart-button" :class="cartOpen ? 'open' : 'closed'" @click="toggleCart">Cart </button>
+  <div id="products">
+    <div v-if="loading">Cart is Empty</div>
+    <li  v-for="(product, index) in products">
+      <div class="nameQuantity">
+      <h4 class="title">{{product.product_title}}</h4>
+      <input :key="product.quantity" class="input" type="number" :value="product.quantity" min="1" @change="updateItem($event, product.id)" @input="updateItem($event, product.id)" :max="available[index]">    
+      </div>
+      <p class="size">Size: {{product.variant_title}}</p>
+      <a href="#" class="remove" v-on:click="removeItem( product.id )"> Remove </a>
+    </li>
+  </div>
+  
+  <div class="suggest"><h2> These are 3 suggested items </h2> </div>
+  
+  <div id="defaults">
+    {% endraw %}
+    {% assign product_1 = all_products[settings.sidecart_empty_cart_1] %}
+    {% assign product_2 = all_products[settings.sidecart_empty_cart_2] %}
+    {% assign product_3 = all_products[settings.sidecart_empty_cart_3] %}
+    <div>
+        <h4 class="sugg_title">{{ product_1.title }}</h4>
+        {% for variant in product_1.variants %}
+          {% if variant.available %}
+      			{% raw %}<button class="button" v-on:click="addItem({% endraw %}{{ variant.id }}{% raw %}, 1)">{% endraw %} {{variant.title}} {% raw %}  </button>{% endraw %}	
+          {% endif %}
+      	{% endfor %}
+        {% raw  %}
+    </div>
+    {% endraw %}
+    <div>
+        <h4 class="sugg_title">{{ product_2.title }}</h4>
+        {% for variant in product_2.variants %}
+        	{% if variant.available %}
+      			{% raw %}<button class="button" v-on:click="addItem({% endraw %}{{ variant.id }}{% raw %}, 1)">{% endraw %} {{variant.title}} {% raw %}  </button>{% endraw %}	
+          	{% endif %}
+      	{% endfor %}
+        {% raw  %}
+    </div> 
+    {% endraw %}
+    <div>
+        <h4 class="sugg_title">{{ product_3.title }}</h4>
+        {% for variant in product_3.variants %}
+        	{% if variant.available %}
+      			{% raw %}<button class="button" v-on:click="addItem({% endraw %}{{ variant.id }}{% raw %}, 1)">{% endraw %} {{variant.title}} {% raw %}  </button>{% endraw %}	
+          	{% endif %}
+        {% endfor %}
+        {% raw  %}
+    </div> 
+  </div>
+  <div class="price-discount">
+      <div>
+        <h5> Sub-Total : $ {{ subtotal }} CAD </h5> 
+        <h5> Discount : $ {{ discount }} CAD </h5>
+        <h5> Total  : $ {{ total }} CAD  </h5>
+      </div>
+  </div>  
+    <p class="tax">(*tax and shipping will be calculated at checkout) </p>
+  {% endraw %}
+  
+  
+</div>
+
+<script src="https://unpkg.com/vue"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  var vue= new Vue({
+    el:"#side-cart ",
+    data : {
+      products:[],
+      available: [],
+      subtotal: "0.0",
+      discount:"0.0",
+      total:"0.0",
+      cartOpen: false,
+      loading: true
+    },
+    created: function() {
+    	this.getCart()    
+    },
+    methods: {
+      	getAvailable: function(j, p_id, v_id ){
+            let  vue = this;
+        	let i=0;
+      		axios.get("/admin/api/2020-01/products/"+p_id+".json")
+        	.then(function (response){
+          		for(i=0; i<response.data.product.variants.length ; i++)
+          		{
+					if ( response.data.product.variants[i].id === v_id )
+            		{             	
+            			let qty= response.data.product.variants[i].inventory_quantity;
+              			Vue.set(vue.available, j, qty)	
+		            }
+        		}
+        	})
+        	.catch(function (error){
+             	console.log(error)})
+        },
+      	getCart: function() {
+            let  vue = this;
+            let i=0;
+            axios.get("/cart.js")
+            .then(function (response){
+              if(response.data.items.length > 0)
+              { 
+                vue.loading = false;
+                let sub= JSON.stringify(response.data.original_total_price)
+                let dis = JSON.stringify(response.data.total_discount)
+                let tot = JSON.stringify(response.data.total_price)
+                sub = (sub.slice(0,-2)+'.'+ sub.slice(-2))
+                dis = (dis.slice(0,-2)+'.'+ dis.slice(-2))
+                tot = (tot.slice(0,-2)+'.'+ tot.slice(-2))
+                vue.subtotal= sub;
+                vue.discount = dis;
+                vue.total = tot; 
+              }
+              else
+              {
+               vue.loading = true;
+               vue.subtotal= "0.0";
+               vue.discount = "0.0";
+               vue.total = "0.0";
+              }
+                
+                vue.products= response.data.items;
+                vue.available = [];
+                for(i=0; i< vue.products.length ;i++)
+                {	 
+                  vue.getAvailable(i, vue.products[i].product_id, vue.products[i].variant_id);
+                }
+              
+            })
+            .catch(function (error){
+               console.log(error)}) 
+        },
+    	updateItem: function(e, id) {
+            let vue = this;
+            let data={
+              "id": JSON.stringify(id),
+              "quantity": parseInt(e.target.value)   
+            };
+            axios.post("/cart/change.js", data)
+              .then(function (response){
+             		 vue.getCart()})
+              .catch(function (error){
+                console.log(error)})
+        },      
+        addItem: function(id, quantity) {
+            let vue = this;
+            let data={"items" :[{
+              "id": JSON.stringify(id),
+              "quantity": quantity    
+            }]};
+            axios.post("/cart/add.js", data)
+            .then(function (response){
+               vue.getCart();
+            })
+            .catch(function (error){
+               console.log(error)})
+        },
+        removeItem: function(id) {
+            let vue = this;
+            let data={
+              "id": JSON.stringify(id),
+              "quantity": 0    
+            };
+            axios.post("/cart/change.js", data)
+              .then(function (response){
+                 vue.getCart();
+              })
+              .catch(function (error){
+                console.log(error)})
+        },
+		toggleCart: function() {
+        	  let vue = this;
+          		vue.cartOpen = !vue.cartOpen;
+        }
+      } 
+    })
+  
+</script>
